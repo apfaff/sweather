@@ -1,0 +1,14 @@
+{
+  "extends": ["standard", "standard-react"],
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  }
+}

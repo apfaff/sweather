@@ -1,0 +1,25 @@
+{
+  "name": "sweather-server",
+  "version": "1.0.0",
+  "description": "Serves the api for the sweather app",
+  "author": "alexanderpfaff@protonmail.com",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "dotenv": "^6.0.0",
+    "restify": "^7.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.1.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
