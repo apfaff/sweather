@@ -9,6 +9,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "dotenv": "^6.0.0",
+    "mongoose": "^5.2.3",
     "restify": "^7.2.1"
   },
   "devDependencies": {
