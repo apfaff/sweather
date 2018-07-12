@@ -3,4 +3,4 @@
 
 ---
 ### What is it?
-Sweather is a mobile application that gives you dressing choices based on the current weather situation in your area.
+Sweather is a mobile app that notifies you what to wear based on the current weather situation in your area.
