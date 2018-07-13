@@ -25,5 +25,8 @@ module.exports = {
     const url = weatherUrl(`lat=${lat}&lon=${lon}`)
     const res = await get(url)
     return res
+  },
+  kelvinToCelsius (degrees) {
+    return degrees - 273.15
   }
 }
