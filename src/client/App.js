@@ -1,6 +1,9 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Swiper from 'react-native-swiper'
 
+import Home from './screens/home/Home'
+import Settings from './screens/settings/Settings'
 import checkIfInitialLaunch from './util/initialLaunch'
 
 export default class App extends React.Component {
@@ -14,23 +17,34 @@ export default class App extends React.Component {
     this.setState({ isInitialLaunch, fetching: false })
   }
 
+  _handleSlideChange = index => {
+    this._swiper.scrollBy(index)
+  }
+
+  assignSwiper = ref => {
+    this._swiper = ref
+  };
+
   render () {
     const { isInitialLaunch, fetching } = this.state
 
     if (fetching) return null
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
+      <Swiper
+        ref={this.assignSwiper}
+        index={1}
+        showsButtons={false}
+        showsPagination={false}
+        loop={false}
+        style={styles.navigator}>
+        <Home />
+        <Settings
+          changeSlide={this._handleSlideChange} />
+      </Swiper>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+  navigator: {}
 })
