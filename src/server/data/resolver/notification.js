@@ -11,7 +11,20 @@ module.exports = {
     res.send(response)
     return next()
   },
-  async unregister (req, res, next) {
+  async update (req, res, next) {
+    Notification.update(
+      { token: req.params.token },
+      { $set: { ...req.body, token: req.params.token } },
+      { runValidators: true },
+      err => {
+        if (err) console.error(err)
+        // TODO: update scheduled task for token
+      })
+
+    res.send(200)
+    return next()
+  },
+  async deregister (req, res, next) {
     Notification.remove({ token: req.params.token }, err => {
       if (err) console.error(err.message)
       // TODO: remove scheduling for push
