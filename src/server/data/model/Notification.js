@@ -10,6 +10,7 @@ const NotificationSchema = new mongoose.Schema({
     minute: Number
   },
   temperature: {
+    scale: String,
     cold: Number,
     warm: Number
   },
