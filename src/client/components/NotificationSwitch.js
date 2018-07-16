@@ -13,7 +13,7 @@ const SettingPicker = props => (
 )
 
 SettingPicker.propTypes = {
-  default: PropTypes.string,
+  default: PropTypes.bool,
   onChange: PropTypes.func
 }
 

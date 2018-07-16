@@ -25,9 +25,9 @@ module.exports = {
     return res
   },
   kelvinToCelsius (degrees) {
-    return degrees - 273.15
+    return Math.ceil(degrees - 273.15)
   },
   kelvinToFahrenheit (degrees) {
-    return degrees * (9 / 5) - 459.67
+    return Math.ceil(degrees * (9 / 5) - 459.67)
   }
 }

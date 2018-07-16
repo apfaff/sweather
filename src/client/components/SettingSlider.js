@@ -2,40 +2,58 @@ import React from 'react'
 import { Slider, StyleSheet, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
-const SettingSlider = props => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>
-        {props.description}
-      </Text>
-      <View style={styles.sliderContainer}>
-        <Text style={styles.sliderTextLeft}>0</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={30}
-          step={1}
-          value={props.default}
-          onSlidingComplete={value => props.onChange(props.name, value)}
-          onValueChange={null} />
-        <Text style={styles.sliderTextRight}>30</Text>
-      </View>
-    </View>
-  )
-}
+import { kelvinToCelsius, kelvinToFahrenheit } from '../util/weather'
 
-SettingSlider.propTypes = {
-  name: PropTypes.string,
-  description: PropTypes.string,
-  default: PropTypes.number,
-  onChange: PropTypes.func
+class SettingSlider extends React.Component {
+  static propTypes = {
+    name: PropTypes.string,
+    description: PropTypes.string,
+    scale: PropTypes.string,
+    default: PropTypes.number,
+    onChange: PropTypes.func
+  }
+
+  state = {
+    value: this.props.default
+  }
+
+  temperature = () => {
+    return this.props.scale === 'celsius'
+      ? `${kelvinToCelsius(this.state.value)} °C`
+      : `${kelvinToFahrenheit(this.state.value)} °F`
+  }
+
+  _handleValueChange = value => {
+    this.setState({ value })
+  }
+
+  render () {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>
+          {this.props.description}
+        </Text>
+        <View style={styles.sliderContainer}>
+          <Slider
+            style={styles.slider}
+            minimumValue={273.15}
+            maximumValue={303.15}
+            step={1}
+            value={this.props.default}
+            onSlidingComplete={value => this.props.onChange(this.props.name, value)}
+            onValueChange={value => this._handleValueChange(value)} />
+          <Text style={styles.sliderValue}>{this.temperature()}</Text>
+        </View>
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'space-between'
   },
   text: {
     color: 'dimgrey'
@@ -49,11 +67,8 @@ const styles = StyleSheet.create({
   slider: {
     flex: 1
   },
-  sliderTextRight: {
-    marginLeft: 10
-  },
-  sliderTextLeft: {
-    marginRight: 10
+  sliderValue: {
+    marginHorizontal: 10
   }
 })
 

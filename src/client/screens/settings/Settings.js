@@ -19,8 +19,8 @@ export default class Settings extends React.Component {
     },
     temperature: {
       scale: 'celsius',
-      cold: 5,
-      warm: 21
+      cold: 278.15,
+      warm: 294.15
     },
     location: {
       lat: null,
@@ -34,29 +34,34 @@ export default class Settings extends React.Component {
   }
 
   _handleChange = field => async (name, value) => {
-    try {
-      await AsyncStorage.setItem(`${field}.${name}`, JSON.stringify(value))
-    } catch (err) {
-      console.error(err)
-    }
-
     this.setState({
       ...this.state,
       [field]: { ...this.state[field], [name]: value }
     })
+
+    try {
+      await AsyncStorage.setItem(field, JSON.stringify(this.state[field]))
+    } catch (err) {
+      console.error(err)
+    }
   }
 
-  _handleNotificationToggle = value => {
+  _handleNotificationToggle = async value => {
     this.setState({ notifications: value })
-    // TODO: handleNotificationToggle => post to API /register
+
+    try {
+      await AsyncStorage.setItem('notifications', JSON.stringify(this.state.notifications))
+    } catch (err) {
+      console.error(err)
+    }
+    // TODO: fetch POST to API /register
   }
 
   _handleTimeChange = () => {
     // TODO: handleTimeChange => put to API /register/:token
   }
 
-  _handlePress = () => {
-    // TODO: query weather and unsplashed
+  _handlePress = async () => {
     this.props.changeSlide(-1)
   }
 
@@ -74,11 +79,13 @@ export default class Settings extends React.Component {
           <SettingSlider
             name={'warm'}
             description={'Ab welcher Temperatur trägst du ein T-Shirt?'}
+            scale={temperature.scale}
             default={temperature.warm}
             onChange={this._handleChange('temperature')} />
           <SettingSlider
             name={'cold'}
             description={'Ab welcher Temperatur trägst du einen Schal?'}
+            scale={temperature.scale}
             default={temperature.cold}
             onChange={this._handleChange('temperature')} />
           <NotificationSwitch
@@ -104,6 +111,7 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   scrollview: {
+    alignSelf: 'center',
     paddingTop: 20
   },
   text: {
