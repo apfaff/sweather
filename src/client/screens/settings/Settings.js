@@ -1,9 +1,11 @@
 import React from 'react'
 import { AsyncStorage, Button, StyleSheet, ScrollView, Text, SafeAreaView } from 'react-native'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 
 import SettingSlider from '../../components/SettingSlider'
 import SettingPicker from '../../components/SettingPicker'
+import SettingTimePicker from '../../components/SettingTimePicker'
 import NotificationSwitch from '../../components/NotificationSwitch'
 
 export default class Settings extends React.Component {
@@ -57,8 +59,24 @@ export default class Settings extends React.Component {
     // TODO: fetch POST to API /register
   }
 
-  _handleTimeChange = () => {
-    // TODO: handleTimeChange => put to API /register/:token
+  // NOTE: Call to API will be debounced, because iOS does not hide TimePicker like on Android
+  _handleTimeChange = async date => {
+    // Because iOS returns a Date object check for any own method
+    const ios = typeof date.getHours !== 'undefined'
+    this.setState({
+      delivery: {
+        hour: ios ? date.getHours() : date.hour,
+        minute: ios ? date.getMinutes() : date.minutes
+      }
+    })
+
+    try {
+      await AsyncStorage.setItem('delivery', JSON.stringify(this.state.delivery))
+    } catch (err) {
+      console.error(err)
+    }
+
+    // TODO: fetch PUT to API /register/:token
   }
 
   _handlePress = async () => {
@@ -91,6 +109,12 @@ export default class Settings extends React.Component {
           <NotificationSwitch
             default={notifications}
             onChange={this._handleNotificationToggle} />
+          {
+            notifications &&
+            <SettingTimePicker
+              default={delivery}
+              onChange={_.debounce(this._handleTimeChange, 2000)} />
+          }
           <Button
             title={'OK'}
             color={'green'}
