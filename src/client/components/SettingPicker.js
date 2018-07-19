@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   text: {
-    color: 'dimgrey'
+    color: 'white'
   },
   picker: {
     alignSelf: 'stretch'

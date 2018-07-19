@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   text: {
-    color: 'dimgrey'
+    color: 'white'
   },
   switch: {}
 })

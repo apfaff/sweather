@@ -1,5 +1,5 @@
 import React from 'react'
-import { AsyncStorage, Button, StyleSheet, ScrollView, Text, SafeAreaView } from 'react-native'
+import { AsyncStorage, Button, StyleSheet, ScrollView, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 
@@ -25,14 +25,18 @@ export default class Settings extends React.Component {
       warm: 294.15
     },
     location: {
-      lat: null,
       lng: null,
-      name: null
+      lat: null
     }
   }
 
   async componentWillMount () {
     // TODO: get initial state from AsyncStorage
+  }
+
+  async componentWillUnmount () {
+    // TODO: make server requests here
+    // fetch POST to API /register
   }
 
   _handleChange = field => async (name, value) => {
@@ -56,7 +60,6 @@ export default class Settings extends React.Component {
     } catch (err) {
       console.error(err)
     }
-    // TODO: fetch POST to API /register
   }
 
   // NOTE: Call to API will be debounced, because iOS does not hide TimePicker like on Android
@@ -75,8 +78,6 @@ export default class Settings extends React.Component {
     } catch (err) {
       console.error(err)
     }
-
-    // TODO: fetch PUT to API /register/:token
   }
 
   _handlePress = async () => {
@@ -84,12 +85,13 @@ export default class Settings extends React.Component {
   }
 
   render () {
-    const { notifications, delivery, location, temperature } = this.state
+    const { notifications, delivery, temperature } = this.state
 
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <Text style={styles.text}>Settings Screen</Text>
-        <ScrollView style={styles.scrollview}>
+        <ScrollView
+          style={styles.scrollview}>
           <SettingPicker
             name={'scale'}
             default={temperature.scale}
@@ -109,19 +111,16 @@ export default class Settings extends React.Component {
           <NotificationSwitch
             default={notifications}
             onChange={this._handleNotificationToggle} />
-          {
-            notifications &&
-            <SettingTimePicker
-              default={delivery}
-              onChange={_.debounce(this._handleTimeChange, 2000)} />
-          }
+          <SettingTimePicker
+            default={delivery}
+            onChange={_.debounce(this._handleTimeChange, 4000)} />
           <Button
             title={'OK'}
             color={'green'}
             accessibilityLabel={'Save your settings'}
             onPress={this._handlePress} />
         </ScrollView>
-      </SafeAreaView>
+      </View>
     )
   }
 }
@@ -131,7 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'whitesmoke',
+    backgroundColor: 'rgba(52, 52, 52, 0.4)',
     paddingTop: 20
   },
   scrollview: {
@@ -139,6 +138,6 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   text: {
-    color: 'dimgrey'
+    color: 'white'
   }
 })

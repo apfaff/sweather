@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   text: {
-    color: 'dimgrey'
+    color: 'white'
   },
   sliderContainer: {
     flex: 1,
