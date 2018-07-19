@@ -1,28 +1,29 @@
-const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather'
-const APP_ID = `appid=${process.env.OPEN_WEATHER_API_KEY}`
+import ENV from '../env'
 
-const weatherUrl = query => `${WEATHER_API_URL}?q=${query}&${APP_ID}`
+const weatherUrl = query => `${ENV.OPEN_WEATHER_API}?${query}&appid=${ENV.OPEN_WEATHER_API_KEY}`
+
+// TODO: extract relevant data: weather[0], main, name
 
 module.exports = {
   async requestCurrentWeatherDataByCityId (cityId) {
     const url = weatherUrl(`id=${cityId}`)
     const res = await fetch(url)
-    return res
+    return res.json()
   },
   async requestCurrentWeatherDataByCityName (cityName, countryCode) {
-    const url = weatherUrl(`${cityName},${countryCode}`)
+    const url = weatherUrl(`q=${cityName},${countryCode}`)
     const res = await fetch(url)
-    return res
+    return res.json()
   },
   async requestCurrentWeatherDataByZip (zip, countryCode) {
-    const url = weatherUrl(`${zip},${countryCode}`)
+    const url = weatherUrl(`q=${zip},${countryCode}`)
     const res = await fetch(url)
-    return res
+    return res.json()
   },
-  async requestCurrentWeatherDataByLatLon (lat, lon) {
-    const url = weatherUrl(`lat=${lat}&lon=${lon}`)
+  async requestCurrentWeatherDataByLatLon (lat, lng) {
+    const url = weatherUrl(`lat=${lat}&lon=${lng}`)
     const res = await fetch(url)
-    return res
+    return res.json()
   },
   kelvinToCelsius (degrees) {
     return Math.ceil(degrees - 273.15)
