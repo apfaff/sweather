@@ -33,7 +33,7 @@ export const getStoredOrRandomPhoto = async query => {
   const randomPhoto = await getRandomPhoto(query)
   await setBackgroundImage({
     ...randomPhoto,
-    queried_at: new Date()
+    queried_at: Date.now()
   })
   return randomPhoto
 }
