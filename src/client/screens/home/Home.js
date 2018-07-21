@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
+import colors from '../../styles/colors'
 import { kelvinToCelsius } from '../../util/weather'
 
 export default class Home extends React.Component {
@@ -15,12 +16,14 @@ export default class Home extends React.Component {
 
     return (
       <View style={styles.container}>
-        { error && <Text style={styles.text}>{error}</Text> }
-        { weather &&
+        <View style={styles.module}>
+          { error && <Text style={styles.text}>{error}</Text> }
+          { weather &&
           <Text style={styles.text}>
-            {weather.weather[0].main} {kelvinToCelsius(weather.main.temp)}
+            {weather.weather[0].main} - {kelvinToCelsius(weather.main.temp)} °C
           </Text>
-        }
+          }
+        </View>
       </View>
     )
   }
@@ -30,10 +33,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center'
+  },
+  module: {
+    flex: 0.25,
+    alignSelf: 'stretch',
+    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(52, 52, 52, 0.4)'
+    margin: 20,
+    borderRadius: 25,
+    backgroundColor: colors.BACKGROUND
   },
   text: {
-    color: 'white'
+    color: colors.PRIMARY
   }
 })

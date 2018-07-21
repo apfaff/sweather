@@ -2,9 +2,12 @@ import React from 'react'
 import { Picker, StyleSheet, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
+import style from '../styles/styles'
+import colors from '../styles/colors'
+
 const SettingPicker = props => (
   <View style={styles.container}>
-    <Text style={styles.text}>Welche Temperatureinheit nutzt man bei dir?</Text>
+    <Text style={styles.text}>Choose your temperature scale:</Text>
     <Picker
       style={styles.picker}
       mode={'dropdown'}
@@ -26,16 +29,17 @@ SettingPicker.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
-  },
-  text: {
-    color: 'white'
+    marginVertical: 10
   },
   picker: {
     alignSelf: 'stretch'
   },
   pickerItem: {
-    height: 46
+    height: 46,
+    color: colors.PRIMARY
+  },
+  text: {
+    ...style.text
   }
 })
 

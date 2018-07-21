@@ -2,12 +2,16 @@ import React from 'react'
 import { StyleSheet, Switch, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
+import style from '../styles/styles'
+import colors from '../styles/colors'
+
 const SettingPicker = props => (
   <View style={styles.container}>
-    <Text style={styles.text}>Push Notifications?</Text>
+    <Text style={styles.text}>Do you want to get notified?</Text>
     <Switch
       style={styles.switch}
       value={props.default}
+      onTintColor={colors.SECONDARY}
       onValueChange={value => props.onChange(value)} />
   </View>
 )
@@ -20,14 +24,17 @@ SettingPicker.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row'
+    justifyContent: 'center',
+    marginVertical: 10
+  },
+  switch: {
+    marginLeft: 20
   },
   text: {
-    color: 'white'
-  },
-  switch: {}
+    ...style.text
+  }
 })
 
 export default SettingPicker

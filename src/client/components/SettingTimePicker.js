@@ -2,6 +2,8 @@ import React from 'react'
 import { Button, DatePickerIOS, Platform, StyleSheet, Text, TimePickerAndroid, View } from 'react-native'
 import PropTypes from 'prop-types'
 
+import style from '../styles/styles'
+
 class SettingTimePicker extends React.Component {
   getDate = () => {
     let date = new Date()
@@ -27,7 +29,7 @@ class SettingTimePicker extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>Wie viel Uhr?</Text>
+        <Text style={styles.text}>At what time?</Text>
         {
           Platform.OS === 'ios'
             ? <DatePickerIOS
@@ -51,10 +53,11 @@ SettingTimePicker.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginVertical: 10
   },
   text: {
-    color: 'white'
+    ...style.text
   }
 })
 

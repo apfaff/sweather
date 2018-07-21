@@ -18,7 +18,7 @@ export default class App extends React.Component {
     initialLaunch: null
   }
 
-  async componentWillMount () {
+  async componentDidMount () {
     const initialLaunch = await isInitialLaunch()
     const location = await getLocationAsync()
     if (!location) {
@@ -50,7 +50,6 @@ export default class App extends React.Component {
     const { photo, weather, initialLaunch, error, fetching } = this.state
 
     if (fetching) return null
-    console.log('should have rendered UI')
     return (
       <View style={styles.container}>
         <StatusBar hidden />
@@ -86,6 +85,5 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     alignSelf: 'stretch'
-  },
-  navigator: {}
+  }
 })
