@@ -23,16 +23,15 @@ SettingPicker.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     marginVertical: 10
   },
   switch: {
     marginLeft: 20
   },
   text: {
+    flex: 1,
     ...style.text
   }
 })

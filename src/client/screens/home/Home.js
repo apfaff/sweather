@@ -1,8 +1,9 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
+import { StyleSheet, Text, View } from 'react-native'
 
 import colors from '../../styles/colors'
+import dimensions from '../../styles/dimensions'
 import { kelvinToCelsius } from '../../util/weather'
 
 export default class Home extends React.Component {
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 20,
+    marginHorizontal: dimensions.mediumWidth,
     borderRadius: 25,
     backgroundColor: colors.BACKGROUND
   },

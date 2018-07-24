@@ -1,10 +1,11 @@
 import React from 'react'
-import { AsyncStorage, Button, StyleSheet, ScrollView, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
+import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native'
 import _ from 'lodash'
 
 import style from '../../styles/styles'
 import colors from '../../styles/colors'
+import dimensions from '../../styles/dimensions'
 import SettingSlider from '../../components/SettingSlider'
 import SettingPicker from '../../components/SettingPicker'
 import SettingTimePicker from '../../components/SettingTimePicker'
@@ -92,45 +93,42 @@ export default class Settings extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.module}>
-          <ScrollView
-            style={styles.scrollview}>
-            <View style={styles.category}>
-              <Text style={styles.headline}>GENERAL SETTINGS</Text>
-              <SettingPicker
-                name={'scale'}
-                default={temperature.scale}
-                onChange={this._handleChange('temperature')} />
-            </View>
-            <View style={styles.category}>
-              <Text style={styles.headline}>CLOTHES</Text>
-              <SettingSlider
-                name={'warm'}
-                description={'When do you wear a T-Shirt?'}
-                scale={temperature.scale}
-                default={temperature.warm}
-                onChange={this._handleChange('temperature')} />
-              <SettingSlider
-                name={'cold'}
-                description={'When do you wear a scarf?'}
-                scale={temperature.scale}
-                default={temperature.cold}
-                onChange={this._handleChange('temperature')} />
-            </View>
-            <View style={styles.category}>
-              <Text style={styles.headline}>NOTIFICATIONS</Text>
-              <NotificationSwitch
-                default={notifications}
-                onChange={this._handleNotificationToggle} />
-              <SettingTimePicker
-                default={delivery}
-                onChange={_.debounce(this._handleTimeChange, 4000)} />
-            </View>
-            <Button
-              title={'OK'}
-              color={'green'}
-              accessibilityLabel={'Save your settings'}
-              onPress={this._handlePress} />
-          </ScrollView>
+          <View style={styles.category}>
+            <Text style={styles.headline}>GENERAL SETTINGS</Text>
+            <SettingPicker
+              name={'scale'}
+              default={temperature.scale}
+              onChange={this._handleChange('temperature')} />
+          </View>
+          <View style={styles.category}>
+            <Text style={styles.headline}>CLOTHES</Text>
+            <SettingSlider
+              name={'warm'}
+              description={'When do you wear a T-Shirt?'}
+              scale={temperature.scale}
+              default={temperature.warm}
+              onChange={this._handleChange('temperature')} />
+            <SettingSlider
+              name={'cold'}
+              description={'When do you wear a scarf?'}
+              scale={temperature.scale}
+              default={temperature.cold}
+              onChange={this._handleChange('temperature')} />
+          </View>
+          <View style={styles.category}>
+            <Text style={styles.headline}>NOTIFICATIONS</Text>
+            <NotificationSwitch
+              default={notifications}
+              onChange={this._handleNotificationToggle} />
+            <SettingTimePicker
+              default={delivery}
+              onChange={_.debounce(this._handleTimeChange, 3000)} />
+          </View>
+          <Button
+            title={'OK'}
+            color={'green'}
+            accessibilityLabel={'Save your settings'}
+            onPress={this._handlePress} />
         </View>
       </View>
     )
@@ -141,15 +139,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(52, 52, 52, 0.4)'
+    justifyContent: 'center'
   },
   module: {
     flex: 1,
     alignSelf: 'stretch',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    marginHorizontal: 20,
+    justifyContent: 'center',
+    marginHorizontal: dimensions.mediumWidth,
     marginVertical: 35,
     borderRadius: 25,
     backgroundColor: colors.BACKGROUND
@@ -158,8 +155,9 @@ const styles = StyleSheet.create({
     ...style.headline,
     borderBottomWidth: StyleSheet.hairlineWidth
   },
-  scrollview: {
-    alignSelf: 'center',
-    paddingTop: 20
+  category: {
+    alignSelf: 'stretch',
+    paddingHorizontal: dimensions.mediumWidth,
+    marginBottom: 5
   }
 })

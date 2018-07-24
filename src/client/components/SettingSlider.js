@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 import style from '../styles/styles'
 import colors from '../styles/colors'
+import dimensions from '../styles/dimensions'
 import { kelvinToCelsius, kelvinToFahrenheit } from '../util/weather'
 
 class SettingSlider extends React.Component {
@@ -54,18 +55,16 @@ class SettingSlider extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     marginVertical: 10
   },
   sliderContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center'
   },
   slider: {
     flex: 1,
-    marginRight: 10
+    marginRight: dimensions.smallWidth
   },
   text: {
     ...style.text
