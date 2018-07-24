@@ -4,31 +4,40 @@ const weatherUrl = query => `${ENV.OPEN_WEATHER_API}?${query}&appid=${ENV.OPEN_W
 
 // TODO: extract relevant data: weather[0], main, name
 
-module.exports = {
-  async requestCurrentWeatherDataByCityId (cityId) {
-    const url = weatherUrl(`id=${cityId}`)
-    const res = await fetch(url)
-    return res.json()
-  },
-  async requestCurrentWeatherDataByCityName (cityName, countryCode) {
-    const url = weatherUrl(`q=${cityName},${countryCode}`)
-    const res = await fetch(url)
-    return res.json()
-  },
-  async requestCurrentWeatherDataByZip (zip, countryCode) {
-    const url = weatherUrl(`q=${zip},${countryCode}`)
-    const res = await fetch(url)
-    return res.json()
-  },
-  async requestCurrentWeatherDataByLatLon (lat, lng) {
-    const url = weatherUrl(`lat=${lat}&lon=${lng}`)
-    const res = await fetch(url)
-    return res.json()
-  },
-  kelvinToCelsius (degrees) {
-    return Math.ceil(degrees - 273.15)
-  },
-  kelvinToFahrenheit (degrees) {
-    return Math.ceil(degrees * (9 / 5) - 459.67)
-  }
+export const requestCurrentWeatherDataByCityId = async cityId => {
+  const url = weatherUrl(`id=${cityId}`)
+  const res = await fetch(url)
+  return res.json()
+}
+
+export const requestCurrentWeatherDataByCityName = async (cityName, countryCode) => {
+  const url = weatherUrl(`q=${cityName},${countryCode}`)
+  const res = await fetch(url)
+  return res.json()
+}
+
+export const requestCurrentWeatherDataByZip = async (zip, countryCode) => {
+  const url = weatherUrl(`q=${zip},${countryCode}`)
+  const res = await fetch(url)
+  return res.json()
+}
+
+export const requestCurrentWeatherDataByLatLon = async (lat, lng) => {
+  const url = weatherUrl(`lat=${lat}&lon=${lng}`)
+  const res = await fetch(url)
+  return res.json()
+}
+
+export const kelvinToCelsius = degrees => {
+  return Math.ceil(degrees - 273.15)
+}
+
+export const kelvinToFahrenheit = degrees => {
+  return Math.ceil(degrees * (9 / 5) - 459.67)
+}
+
+export const renderTemperatureInScale = (scale, temperature) => {
+  return scale === 'celsius'
+    ? `${kelvinToCelsius(temperature)} °C`
+    : `${kelvinToFahrenheit(temperature)} °F`
 }
