@@ -17,13 +17,14 @@ class SettingSlider extends React.Component {
   }
 
   state = {
-    value: this.props.default
+    value: null
   }
 
   temperature = () => {
+    const value = this.state.value !== null ? this.state.value : this.props.default
     return this.props.scale === 'celsius'
-      ? `${kelvinToCelsius(this.state.value)} °C`
-      : `${kelvinToFahrenheit(this.state.value)} °F`
+      ? `${kelvinToCelsius(value)} °C`
+      : `${kelvinToFahrenheit(value)} °F`
   }
 
   _handleValueChange = value => {
@@ -46,7 +47,7 @@ class SettingSlider extends React.Component {
             value={this.props.default}
             onSlidingComplete={value => this.props.onChange(this.props.name, value)}
             onValueChange={value => this._handleValueChange(value)} />
-          <Text>{this.temperature()}</Text>
+          <Text style={styles.value}>{this.temperature()}</Text>
         </View>
       </View>
     )

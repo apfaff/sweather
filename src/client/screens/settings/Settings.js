@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native'
 import _ from 'lodash'
 
+import { getSettings, setNotifications, setDeliveryTime } from '../../util/storage'
 import style from '../../styles/styles'
 import colors from '../../styles/colors'
 import dimensions from '../../styles/dimensions'
@@ -33,8 +34,20 @@ export default class Settings extends React.Component {
     }
   }
 
-  async componentWillMount () {
-    // TODO: get initial state from AsyncStorage
+  async componentDidMount () {
+    const persistentSettings = await getSettings()
+    if (persistentSettings) {
+      const settings = persistentSettings.reduce((acc, setting) => {
+        const [ key, value ] = setting
+        if (value !== null) acc[key] = JSON.parse(value)
+        return acc
+      }, {})
+
+      this.setState({
+        ...this.state,
+        ...settings
+      })
+    }
   }
 
   async componentWillUnmount () {
@@ -49,7 +62,7 @@ export default class Settings extends React.Component {
     })
 
     try {
-      await AsyncStorage.setItem(field, JSON.stringify(this.state[field]))
+      await AsyncStorage.setItem(field, JSON.stringify({ ...this.state[field], [name]: value }))
     } catch (err) {
       console.error(err)
     }
@@ -59,7 +72,7 @@ export default class Settings extends React.Component {
     this.setState({ notifications: value })
 
     try {
-      await AsyncStorage.setItem('notifications', JSON.stringify(this.state.notifications))
+      await setNotifications(value)
     } catch (err) {
       console.error(err)
     }
@@ -69,15 +82,15 @@ export default class Settings extends React.Component {
   _handleTimeChange = async date => {
     // Because iOS returns a Date object check for any own method
     const ios = typeof date.getHours !== 'undefined'
-    this.setState({
-      delivery: {
-        hour: ios ? date.getHours() : date.hour,
-        minute: ios ? date.getMinutes() : date.minutes
-      }
-    })
+    const delivery = {
+      hour: ios ? date.getHours() : date.hour,
+      minute: ios ? date.getMinutes() : date.minute
+    }
+
+    this.setState({ delivery })
 
     try {
-      await AsyncStorage.setItem('delivery', JSON.stringify(this.state.delivery))
+      await setDeliveryTime(delivery)
     } catch (err) {
       console.error(err)
     }

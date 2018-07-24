@@ -37,7 +37,7 @@ class SettingTimePicker extends React.Component {
               mode={'time'}
               onDateChange={date => this.props.onChange(date)} />
             : <Button
-              title={'Zeit auswählen'}
+              title={`${this.props.default.hour}:${this.props.default.minute}`}
               onPress={this.openTimePickerAndroid} />
         }
       </View>
