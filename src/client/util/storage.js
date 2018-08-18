@@ -6,6 +6,8 @@ const DELIVERY_TIME = 'delivery'
 const NOTIFICATIONS = 'notifications'
 const INITIAL_LAUNCH = 'initialLaunch'
 const BACKGROUND_IMAGE = 'backgroundImage'
+const REGISTERED = 'registered'
+const SYNCED = 'synced'
 
 const _storeData = key => async value => {
   try {
@@ -44,6 +46,8 @@ export const getDeliveryTime = () => _retrieveData(DELIVERY_TIME)
 export const getLocation = () => _retrieveData(LOCATION)
 export const getNotifications = () => _retrieveData(NOTIFICATIONS)
 export const getBackgroundImage = () => _retrieveData(BACKGROUND_IMAGE)
+export const getSynced = () => _retrieveData(SYNCED)
+export const getRegistered = () => _retrieveData(REGISTERED)
 export const getSettings = () => _retrieveMultipleData([TEMPERATURE, NOTIFICATIONS, DELIVERY_TIME, LOCATION])
 
 export const setTemperature = _storeData(TEMPERATURE)
@@ -51,6 +55,8 @@ export const setDeliveryTime = _storeData(DELIVERY_TIME)
 export const setLocation = _storeData(LOCATION)
 export const setNotifications = _storeData(NOTIFICATIONS)
 export const setBackgroundImage = _storeData(BACKGROUND_IMAGE)
+export const setSynced = _storeData(SYNCED)
+export const setRegisterd = _storeData(REGISTERED)
 
 const getInitialLaunch = _retrieveData(INITIAL_LAUNCH)
 const setInitialLaunch = _storeData(INITIAL_LAUNCH)
