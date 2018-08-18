@@ -1,6 +1,6 @@
 import ENV from '../env'
 
-const weatherUrl = query => `${ENV.OPEN_WEATHER_API}?${query}&appid=${ENV.OPEN_WEATHER_API_KEY}`
+const weatherUrl = query => `https://api.openweathermap.org/data/2.5/weather?${query}&appid=${ENV.OPEN_WEATHER_API_KEY}`
 
 // TODO: extract relevant data: weather[0], main, name
 
