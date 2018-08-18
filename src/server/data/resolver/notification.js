@@ -23,7 +23,7 @@ const scheduleOrReSchedule = (record) => {
 // reindex persisted notifications (i.e on server restart)
 const reindex = () => {
   Notification.find().cursor().on('data', (record) => {
-    console.info(`scheduled ${record}`)
+    console.info(`scheduled ${record.delivery} for ${record.token}`)
     scheduleOrReSchedule(record)
   })
 }

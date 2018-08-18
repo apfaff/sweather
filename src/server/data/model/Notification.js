@@ -1,5 +1,12 @@
 const mongoose = require('mongoose')
 
+const ExpoPushReceipt = new mongoose.Schema({
+  id: String,
+  date: Date,
+  status: String,
+  details: Object
+})
+
 const NotificationSchema = new mongoose.Schema({
   token: {
     type: String,
@@ -19,7 +26,10 @@ const NotificationSchema = new mongoose.Schema({
     lat: Number,
     lng: Number,
     name: String
-  }
+  },
+  openExpoPushTickets: [ExpoPushReceipt],
+  expoRejectedTickets: [ExpoPushReceipt],
+  expoPushReceipts: [ExpoPushReceipt]
 })
 
 const Notification = mongoose.model('Notification', NotificationSchema)
