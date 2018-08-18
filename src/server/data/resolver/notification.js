@@ -7,18 +7,16 @@ const { sendPushNotification } = require('../../util/pushService')
 const scheduleOrReSchedule = (record) => {
   let document = {...record.toJSON()}
   let delivery = moment(document.delivery.date).tz(process.env.TIMEZONE)
+  let rule = {
+    hour: delivery.hour,
+    minute: delivery.minute
+  }
   try {
-    reScheduleDailyJob(document.token, {
-      hour: delivery.hour,
-      minute: delivery.minute
-    })
+    reScheduleDailyJob(document.token, rule)
   } catch (err) {
     scheduleDailyJob(() => {
       sendPushNotification(document.token)
-    })(document.token, {
-      hour: delivery.hour,
-      minute: delivery.minute
-    })
+    })(document.token, rule)
   }
 }
 
