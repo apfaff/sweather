@@ -6,8 +6,12 @@
   "license": "UNLICENSED",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo login && expo start",
+    "init": "cp -n .env.js env.js"
+  },
   "dependencies": {
-    "expo": "^28.0.0",
+    "expo": "^28.0.1",
     "lodash": "^4.17.10",
     "prop-types": "^15.6.2",
     "react": "16.3.1",
