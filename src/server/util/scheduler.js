@@ -15,10 +15,28 @@ const scheduleJob = fn => (name, { dayOfWeek, hour, minute }) =>
 const scheduleDailyJob = fn => (name, rule) =>
   schedule.scheduleJob(name, {dayOfWeek: daily, ...rule}, fn)
 
-const cancelJob = name => schedule.scheduledJobs[name].cancel()
+const cancelJob = name => {
+  if (schedule.scheduledJobs[name]) {
+    schedule.scheduledJobs[name].cancel()
+  } else {
+    throw new Error('no such job')
+  }
+}
+
+const reScheduleDailyJob = (name, rule) => {
+  if (schedule.scheduledJobs[name]) {
+    schedule.scheduledJobs[name].reschedule({
+      dayOfWeek: daily,
+      ...rule
+    })
+  } else {
+    throw new Error('no such job')
+  }
+}
 
 module.exports = {
   scheduleJob,
   scheduleDailyJob,
+  reScheduleDailyJob,
   cancelJob
 }

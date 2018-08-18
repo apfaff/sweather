@@ -26,6 +26,7 @@ export default class Settings extends React.Component {
 
     notifications: false,
     delivery: {
+      date: null,
       hour: 6,
       minute: 0
     },
@@ -200,11 +201,11 @@ export default class Settings extends React.Component {
     this.markUnsynced()
   }
 
-  // NOTE: Call to API will be debounced, because iOS does not hide TimePicker like on Android
   _handleTimeChange = async date => {
     // Because iOS returns a Date object check for any own method
     const ios = typeof date.getHours !== 'undefined'
     const delivery = {
+      date: date,
       hour: ios ? date.getHours() : date.hour,
       minute: ios ? date.getMinutes() : date.minute
     }

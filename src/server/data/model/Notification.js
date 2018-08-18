@@ -6,6 +6,7 @@ const NotificationSchema = new mongoose.Schema({
     unique: true
   },
   delivery: {
+    date: Date,
     hour: Number,
     minute: Number
   },
