@@ -20,9 +20,9 @@ export default class Home extends React.Component {
         <View style={styles.module}>
           { error && <Text style={styles.text}>{error}</Text> }
           { weather &&
-          <Text style={styles.text}>
-            {weather.weather[0].main} - {kelvinToCelsius(weather.main.temp)} °C
-          </Text>
+            <Text style={styles.text}>
+              {weather.weather[0].main} - {kelvinToCelsius(weather.main.temp)} °C
+            </Text>
           }
         </View>
       </View>

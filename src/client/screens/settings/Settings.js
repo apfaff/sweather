@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native'
-import _ from 'lodash'
 
 import { getSettings, setNotifications, setDeliveryTime } from '../../util/storage'
 import style from '../../styles/styles'
@@ -50,11 +49,6 @@ export default class Settings extends React.Component {
     }
   }
 
-  async componentWillUnmount () {
-    // TODO: make server requests here
-    // fetch POST to API /register
-  }
-
   _handleChange = field => async (name, value) => {
     this.setState({
       ...this.state,
@@ -78,7 +72,6 @@ export default class Settings extends React.Component {
     }
   }
 
-  // NOTE: Call to API will be debounced, because iOS does not hide TimePicker like on Android
   _handleTimeChange = async date => {
     // Because iOS returns a Date object check for any own method
     const ios = typeof date.getHours !== 'undefined'
@@ -97,6 +90,8 @@ export default class Settings extends React.Component {
   }
 
   _handlePress = async () => {
+    // TODO: make server requests here
+    // fetch POST to API /register
     this.props.changeSlide(-1)
   }
 
@@ -135,7 +130,7 @@ export default class Settings extends React.Component {
               onChange={this._handleNotificationToggle} />
             <SettingTimePicker
               default={delivery}
-              onChange={_.debounce(this._handleTimeChange, 3000)} />
+              onChange={this._handleTimeChange} />
           </View>
           <Button
             title={'OK'}

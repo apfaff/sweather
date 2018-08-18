@@ -1,4 +1,5 @@
 const Notification = require('../model/Notification')
+const { scheduleDailyJob, cancelJob } = require('../../util/scheduler')
 
 module.exports = {
   async register (req, res, next) {
@@ -6,6 +7,7 @@ module.exports = {
     const response = await notification.save(err => {
       if (err) console.error(err.message)
       // TODO: schedule push task
+      scheduleDailyJob()
     })
 
     res.send(response)
@@ -19,6 +21,7 @@ module.exports = {
       err => {
         if (err) console.error(err)
         // TODO: update scheduled task for token
+        scheduleDailyJob()
       })
 
     res.send(200)
@@ -28,6 +31,7 @@ module.exports = {
     Notification.remove({ token: req.params.token }, err => {
       if (err) console.error(err.message)
       // TODO: remove scheduling for push
+      cancelJob(req.params.token)
     })
 
     res.send(200)

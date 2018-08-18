@@ -11,6 +11,7 @@ import { getStoredOrRandomPhoto } from './util/unsplash'
 import { requestCurrentWeatherDataByLatLon } from './util/weather'
 
 export default class App extends React.Component {
+  // TODO: keep global state including settings here and send it via props
   state = {
     photo: null,
     weather: null,
