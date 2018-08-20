@@ -185,10 +185,8 @@ export default class Settings extends React.Component {
         const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
         finalStatus = status
       }
-      // Stop here if the user did not grant permissions
-      if (finalStatus !== 'granted') {
-        return
-      }
+      //TODO: Stop here if the user did not grant permissions
+      if (finalStatus !== 'granted') {}
     }
 
     this.setState({ notifications: value })
