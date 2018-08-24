@@ -19,6 +19,7 @@ export default class Settings extends React.Component {
   state = {
     notifications: false,
     delivery: {
+      date: null,
       hour: 6,
       minute: 0
     },
@@ -76,6 +77,7 @@ export default class Settings extends React.Component {
     // Because iOS returns a Date object check for any own method
     const ios = typeof date.getHours !== 'undefined'
     const delivery = {
+      date: date,
       hour: ios ? date.getHours() : date.hour,
       minute: ios ? date.getMinutes() : date.minute
     }
