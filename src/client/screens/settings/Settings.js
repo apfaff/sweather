@@ -1,8 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native'
+import _ from 'lodash'
 
-import { getSettings, setNotifications, setDeliveryTime } from '../../util/storage'
+import { Permissions, Notifications } from 'expo'
+import env from '../../env'
+
+import { getSettings, setNotifications, setDeliveryTime, getSynced, getRegistered, setSynced, setRegisterd } from '../../util/storage'
 import style from '../../styles/styles'
 import colors from '../../styles/colors'
 import dimensions from '../../styles/dimensions'
@@ -17,6 +21,9 @@ export default class Settings extends React.Component {
   }
 
   state = {
+    registered: false,
+    synced: false,
+
     notifications: false,
     delivery: {
       date: null,
@@ -35,6 +42,8 @@ export default class Settings extends React.Component {
   }
 
   async componentDidMount () {
+    const persistedRegistered = await getRegistered()
+    const persistedSync = await getSynced()
     const persistentSettings = await getSettings()
     if (persistentSettings) {
       const settings = persistentSettings.reduce((acc, setting) => {
@@ -44,23 +53,123 @@ export default class Settings extends React.Component {
       }, {})
 
       this.setState({
+        registered: persistedRegistered,
+        synced: persistedSync,
         ...this.state,
         ...settings
       })
     }
+
+    // schedule sync in case the last one was not successful
+    this.sync()
   }
 
-  _handleChange = field => async (name, value) => {
-    this.setState({
-      ...this.state,
-      [field]: { ...this.state[field], [name]: value }
-    })
+  async componentWillUnmount () {}
 
+  markUnsynced = async () => {
+    this.setState({ synced: false })
     try {
-      await AsyncStorage.setItem(field, JSON.stringify({ ...this.state[field], [name]: value }))
+      await setSynced(false)
     } catch (err) {
       console.error(err)
     }
+
+    // schedule sync
+    this.sync()
+  }
+
+  syncJob = null
+  // will try to sync with api at all costs
+  sync = _.debounce(() => {
+    //  sync is not necessary
+    if (this.state.synced) return
+
+    // sync is already in progress
+    if (this.syncJob) return
+
+    const job = async () => {
+      // seems the last sync attempt was successfull already
+      if (this.state.synced) return cleanUp()
+
+      try {
+      // we are registerd but notifications are no longer to be send
+        if (this.state.registered && !this.state.notifications) {
+          await this._handlePushDeRegistration()
+          this.setState({ registered: false })
+          await setRegisterd(false)
+          await cleanUp()
+        } else
+        // is not registered? then register
+        if (!this.state.registered && this.state.notifications) {
+          await this._handlePushRegistration()
+          this.setState({ registered: true })
+          await setRegisterd(true)
+          await cleanUp()
+        } else
+        //  we are registerd so update instead
+        if (this.state.registered && this.state.notifications) {
+          await this._handlePushRegistrationUpdate()
+          await cleanUp()
+        } else {
+          console.info('nothing to do...')
+          await cleanUp()
+        }
+      } catch (err) {
+        console.info(err)
+      }
+    }
+
+    const cleanUp = () => {
+      console.info('sync was successfull. cleaning up.')
+
+      // remove this job
+      clearInterval(this.syncJob)
+      this.syncJob = null
+
+      // we are officially synced
+      this.setState({ synced: true })
+      return setSynced(true)
+    }
+
+    this.syncJob = setInterval(job, 30000)
+    job()
+  }, 3000)
+
+  _handlePushRegistrationUpdate = async () => {
+    let token = await Notifications.getExpoPushTokenAsync()
+    return fetch(`${env.API_URL}/register/${token}`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json', 'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...this.state,
+        token: token
+      })
+    })
+  }
+
+  _handlePushRegistration = async (register) => {
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync()
+    return fetch(`${env.API_URL}/register`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json', 'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...this.state,
+        token: token
+      })
+    })
+  }
+
+  _handlePushDeRegistration = async (register) => {
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync()
+    return fetch(`${env.API_URL}/deregister/${token}`, {
+      method: 'DELETE'
+    })
   }
 
   _handleNotificationToggle = async value => {
@@ -82,14 +191,15 @@ export default class Settings extends React.Component {
     }
 
     this.setState({ notifications: value })
-
     try {
       await setNotifications(value)
     } catch (err) {
       console.error(err)
     }
+    this.markUnsynced()
   }
 
+  // NOTE: Call to API will be debounced, because iOS does not hide TimePicker like on Android
   _handleTimeChange = async date => {
     // Because iOS returns a Date object check for any own method
     const ios = typeof date.getHours !== 'undefined'
@@ -106,14 +216,30 @@ export default class Settings extends React.Component {
     } catch (err) {
       console.error(err)
     }
+    this.markUnsynced()
   }
 
   _handlePress = async () => {
-    // TODO: make server requests here
-    // fetch POST to API /register
     this.props.changeSlide(-1)
+    this.markUnsynced()
   }
 
+  _handleChange = field => async (name, value) => {
+    this.setState({
+      ...this.state,
+      [field]: { ...this.state[field], [name]: value }
+    })
+
+    try {
+      await AsyncStorage.setItem(field, JSON.stringify({ ...this.state[field], [name]: value }))
+    } catch (err) {
+      console.error(err)
+    }
+
+    this.markUnsynced()
+  }
+
+  // TODO: indicator if synced successfully or not.
   render () {
     const { notifications, delivery, temperature } = this.state
 
@@ -149,7 +275,7 @@ export default class Settings extends React.Component {
               onChange={this._handleNotificationToggle} />
             <SettingTimePicker
               default={delivery}
-              onChange={this._handleTimeChange} />
+              onChange={_.debounce(this._handleTimeChange, 3000)} />
           </View>
           <Button
             title={'OK'}
