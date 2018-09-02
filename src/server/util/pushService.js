@@ -3,6 +3,11 @@ const Expo = require('expo-server-sdk').Expo
 
 let expo = new Expo()
 
+/**
+ * Tries to re send rejected push messages
+ *
+ * @param {function} messageFactory - Handler that creates push message objects from a push token
+ */
 const expoPushServiceMaintenanceJob = async (messageFactory) => {
   //  resolve open expo tickets
   Notification.find({
@@ -52,6 +57,12 @@ const expoPushServiceMaintenanceJob = async (messageFactory) => {
   await sendPushNotifications(rejectedPushTokens, messageFactory)
 }
 
+/**
+ * Sends multiple push messages
+ *
+ * @param {array} tokens - Push tokens to be messaged
+ * @param {function} messageFactory - Handler that creates push message objects from a push token
+ */
 const sendPushNotifications = async (tokens, messageFactory) => {
   tokens = tokens.filter((token) => {
     let isValid = Expo.isExpoPushToken(token)
@@ -109,7 +120,14 @@ const sendPushNotifications = async (tokens, messageFactory) => {
   }
 }
 
+/**
+ * Handles sending and managing send push messages to expo push service
+ */
 class PushService {
+  /**
+   * @param {function} messageFactory - Handler that creates push message objects from a push token
+   * @param {number} interval - Interval of checking with expo push service for rejected push messages in ms
+   */
   constructor (messageFactory, interval = 30 * 60 * 1000) {
     this.messageFactory = messageFactory
 
@@ -120,10 +138,18 @@ class PushService {
     setInterval(this.pushServiceMaintenanceJob, interval)
   }
 
+  /**
+   * Sends push message
+   * @param {string} token - Push token to be messaged
+   */
   async sendPushNotification (token) {
     return sendPushNotifications([token], this.messageFactory)
   }
 
+  /**
+   * Send multiple push messages
+   * @param {array} tokens - Push tokens to be messaged
+   */
   async sendPushNotifications (tokens) {
     return sendPushNotifications(tokens, this.messageFactory)
   }
