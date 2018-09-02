@@ -3,7 +3,7 @@ const Expo = require('expo-server-sdk').Expo
 
 let expo = new Expo()
 
-const expoPushServiceMaintenanceJob = async () => {
+const expoPushServiceMaintenanceJob = async (messageFactory) => {
   //  resolve open expo tickets
   Notification.find({
     openExpoPushTickets: { $exists: true, $not: {$size: 0} }
@@ -49,26 +49,18 @@ const expoPushServiceMaintenanceJob = async () => {
 
   // re send rejected tickets
   let rejectedPushTokens = rejectedNotifications.map((notification) => notification.token)
-  await sendPushNotifications(rejectedPushTokens)
+  await sendPushNotifications(rejectedPushTokens, messageFactory)
 }
-const interval = 30 * 60 * 1000
-setInterval(expoPushServiceMaintenanceJob, interval)
-expoPushServiceMaintenanceJob()
 
-const sendPushNotifications = async (tokens) => {
+const sendPushNotifications = async (tokens, messageFactory) => {
   tokens = tokens.filter((token) => {
     let isValid = Expo.isExpoPushToken(token)
     if (!isValid) console.warn(`${token} is not an expo push token. ignoring for now...`)
     return isValid
   })
-  let messages = tokens.map((token) => {
-    return {
-      to: token,
-      sound: 'default',
-      body: 'This is a test notification',
-      data: { withSome: 'data' }
-    }
-  })
+  let messages = await Promise.all(
+    tokens.map((token) => messageFactory(token))
+  )
 
   let chunks = expo.chunkPushNotifications(messages)
   let tickets = []
@@ -117,9 +109,24 @@ const sendPushNotifications = async (tokens) => {
   }
 }
 
-module.exports = {
+class PushService {
+  constructor (messageFactory, interval = 30 * 60 * 1000) {
+    this.messageFactory = messageFactory
+
+    this.pushServiceMaintenanceJob = () => {
+      expoPushServiceMaintenanceJob(this.messageFactory)
+    }
+    this.pushServiceMaintenanceJob()
+    setInterval(this.pushServiceMaintenanceJob, interval)
+  }
+
   async sendPushNotification (token) {
-    sendPushNotifications([token])
-  },
-  sendPushNotifications
+    return sendPushNotifications([token], this.messageFactory)
+  }
+
+  async sendPushNotifications (tokens) {
+    return sendPushNotifications(tokens, this.messageFactory)
+  }
 }
+
+module.exports = PushService
