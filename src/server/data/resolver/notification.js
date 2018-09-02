@@ -2,7 +2,9 @@ const moment = require('moment-timezone')
 
 const Notification = require('../model/Notification')
 const { scheduleDailyJob, cancelJob, reScheduleDailyJob } = require('../../util/scheduler')
-const { sendPushNotification } = require('../../util/pushService')
+const PushService = require('../../util/pushService')
+const messageFactory = require('../../util/pushMessageFactory')
+const pushService = new PushService(messageFactory)
 
 const scheduleOrReSchedule = (record) => {
   let document = {...record.toJSON()}
@@ -15,7 +17,7 @@ const scheduleOrReSchedule = (record) => {
     reScheduleDailyJob(document.token, rule)
   } catch (err) {
     scheduleDailyJob(() => {
-      sendPushNotification(document.token)
+      pushService.sendPushNotification(record.token)
     })(document.token, rule)
   }
 }
