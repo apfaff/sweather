@@ -17,7 +17,7 @@ module.exports = async (token) => {
   // TODO: i18n
   // TODO: include common module that resolves texts?
   let text = {
-    title: '',
+    title: 'some title',
     body: 'This is a test notification'
   }
 
