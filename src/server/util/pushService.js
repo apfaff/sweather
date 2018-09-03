@@ -14,7 +14,7 @@ const expoPushServiceMaintenanceJob = async (messageFactory) => {
     openExpoPushTickets: { $exists: true, $not: {$size: 0} }
   })
     .cursor().on('data', async (record) => {
-      console.info(`resolving open tickets for ${record.ticket}`)
+      console.info(`resolving open tickets for ${record.id}`)
       let ticketIds = record.openExpoPushTickets.map((ticket) => ticket.id)
       let receiptIdChunks = expo.chunkPushNotificationReceiptIds(ticketIds)
       for (let chunk of receiptIdChunks) {
