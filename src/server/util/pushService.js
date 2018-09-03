@@ -54,7 +54,7 @@ const expoPushServiceMaintenanceJob = async (messageFactory) => {
 
   // re send rejected tickets
   let rejectedPushTokens = rejectedNotifications.map((notification) => notification.token)
-  await sendPushNotifications(rejectedPushTokens, messageFactory)
+  if (rejectedNotifications.length > 0) await sendPushNotifications(rejectedPushTokens, messageFactory)
 }
 
 /**
