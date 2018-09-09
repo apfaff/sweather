@@ -2,21 +2,22 @@ const moment = require('moment-timezone')
 
 const Notification = require('../model/Notification')
 const { scheduleDailyJob, cancelJob, reScheduleDailyJob } = require('../../util/scheduler')
-const { sendPushNotification } = require('../../util/pushService')
+const PushService = require('../../util/pushService')
+const messageFactory = require('../../util/pushMessageFactory')
+const pushService = new PushService(messageFactory)
 
-const scheduleOrReSchedule = (record) => {
-  let document = {...record.toJSON()}
-  let delivery = moment(document.delivery.date).tz(process.env.TIMEZONE || 'Europe/Berlin')
+const rescheduleOrSchedule = (record) => {
+  let delivery = moment(record.delivery.date).tz(process.env.TIMEZONE || 'Europe/Berlin')
   let rule = {
     hour: delivery.hour,
     minute: delivery.minute
   }
   try {
-    reScheduleDailyJob(document.token, rule)
+    reScheduleDailyJob(record.token, rule)
   } catch (err) {
     scheduleDailyJob(() => {
-      sendPushNotification(document.token)
-    })(document.token, rule)
+      pushService.sendPushNotification(record.token)
+    })(record.token, rule)
   }
 }
 
@@ -24,7 +25,7 @@ const scheduleOrReSchedule = (record) => {
 const reindex = () => {
   Notification.find().cursor().on('data', (record) => {
     console.info(`scheduled ${record.delivery} for ${record.token}`)
-    scheduleOrReSchedule(record)
+    rescheduleOrSchedule(record.toJSON())
   })
 }
 reindex()
@@ -37,7 +38,7 @@ module.exports = {
     } catch (err) {
       console.error(err)
     } finally {
-      scheduleOrReSchedule(notification)
+      rescheduleOrSchedule(notification.toJSON())
       res.send(200)
       next()
     }
@@ -51,7 +52,7 @@ module.exports = {
         { runValidators: true })
 
       let record = await Notification.findOne({token: token})
-      scheduleOrReSchedule(record)
+      rescheduleOrSchedule(record.toJSON())
       res.send(200)
     } catch (err) {
       res.send(500)

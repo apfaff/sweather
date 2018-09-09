@@ -1,7 +1,7 @@
 const { get } = require('./api')
 
 const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather'
-const APP_ID = `appid=${process.env.OPEN_WEATHER_API_KEY}`
+const APP_ID = process.env.OPEN_WEATHER_API_KEY
 
 const weatherUrl = query => `${WEATHER_API_URL}?${query}&appid=${APP_ID}`
 

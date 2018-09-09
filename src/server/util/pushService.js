@@ -3,13 +3,18 @@ const Expo = require('expo-server-sdk').Expo
 
 let expo = new Expo()
 
-const expoPushServiceMaintenanceJob = async () => {
+/**
+ * Tries to re send rejected push messages
+ *
+ * @param {function} messageFactory - Handler that creates push message objects from a push token
+ */
+const expoPushServiceMaintenanceJob = async (messageFactory) => {
   //  resolve open expo tickets
   Notification.find({
     openExpoPushTickets: { $exists: true, $not: {$size: 0} }
   })
     .cursor().on('data', async (record) => {
-      console.info(`resolving open tickets for ${record.ticket}`)
+      console.info(`resolving open tickets for ${record.id}`)
       let ticketIds = record.openExpoPushTickets.map((ticket) => ticket.id)
       let receiptIdChunks = expo.chunkPushNotificationReceiptIds(ticketIds)
       for (let chunk of receiptIdChunks) {
@@ -49,26 +54,24 @@ const expoPushServiceMaintenanceJob = async () => {
 
   // re send rejected tickets
   let rejectedPushTokens = rejectedNotifications.map((notification) => notification.token)
-  await sendPushNotifications(rejectedPushTokens)
+  if (rejectedNotifications.length > 0) await sendPushNotifications(rejectedPushTokens, messageFactory)
 }
-const interval = 30 * 60 * 1000
-setInterval(expoPushServiceMaintenanceJob, interval)
-expoPushServiceMaintenanceJob()
 
-const sendPushNotifications = async (tokens) => {
+/**
+ * Sends multiple push messages
+ *
+ * @param {array} tokens - Push tokens to be messaged
+ * @param {function} messageFactory - Handler that creates push message objects from a push token
+ */
+const sendPushNotifications = async (tokens, messageFactory) => {
   tokens = tokens.filter((token) => {
     let isValid = Expo.isExpoPushToken(token)
     if (!isValid) console.warn(`${token} is not an expo push token. ignoring for now...`)
     return isValid
   })
-  let messages = tokens.map((token) => {
-    return {
-      to: token,
-      sound: 'default',
-      body: 'This is a test notification',
-      data: { withSome: 'data' }
-    }
-  })
+  let messages = await Promise.all(
+    tokens.map((token) => messageFactory(token))
+  )
 
   let chunks = expo.chunkPushNotifications(messages)
   let tickets = []
@@ -117,9 +120,39 @@ const sendPushNotifications = async (tokens) => {
   }
 }
 
-module.exports = {
+/**
+ * Handles sending and managing send push messages to expo push service
+ */
+class PushService {
+  /**
+   * @param {function} messageFactory - Handler that creates push message objects from a push token
+   * @param {number} interval - Interval of checking with expo push service for rejected push messages in ms
+   */
+  constructor (messageFactory, interval = 30 * 60 * 1000) {
+    this.messageFactory = messageFactory
+
+    this.pushServiceMaintenanceJob = () => {
+      expoPushServiceMaintenanceJob(this.messageFactory)
+    }
+    this.pushServiceMaintenanceJob()
+    setInterval(this.pushServiceMaintenanceJob, interval)
+  }
+
+  /**
+   * Sends push message
+   * @param {string} token - Push token to be messaged
+   */
   async sendPushNotification (token) {
-    sendPushNotifications([token])
-  },
-  sendPushNotifications
+    return sendPushNotifications([token], this.messageFactory)
+  }
+
+  /**
+   * Send multiple push messages
+   * @param {array} tokens - Push tokens to be messaged
+   */
+  async sendPushNotifications (tokens) {
+    return sendPushNotifications(tokens, this.messageFactory)
+  }
 }
+
+module.exports = PushService
